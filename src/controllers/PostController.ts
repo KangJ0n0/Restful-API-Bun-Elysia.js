@@ -46,3 +46,67 @@ export async function createPost(options: { title: string; content: string }) {
     console.error(`Error creating post: ${e}`);
   }
 }
+
+/**
+ * Getting a post by ID
+ */
+export async function getPostById(id: string) {
+  try {
+    // Konversi tipe id menjadi number
+    const postId = parseInt(id);
+
+    //get post by id
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    //if post not found
+    if (!post) {
+      return {
+        sucess: true,
+        message: "Detail Data Post Not Found!",
+        data: null,
+      };
+    }
+
+    //return response json
+    return {
+      success: true,
+      message: `Detail Data Post By ID : ${id}`,
+      data: post,
+    };
+  } catch (e: unknown) {
+    console.error(`Error finding post: ${e}`);
+  }
+}
+
+/**
+ * Updating a post
+ */
+export async function updatePost(id: string, options: { title?: string; content?: string }) {
+  try {
+    // Konversi tipe id menjadi number
+    const postId = parseInt(id);
+
+    //get title and content
+    const { title, content } = options;
+
+    //update post with prisma
+    const post = await prisma.post.update({
+      where: { id: postId },
+      data: {
+        ...(title ? { title } : {}),
+        ...(content ? { content } : {}),
+      },
+    });
+
+    //return response json
+    return {
+      success: true,
+      message: "Post Updated Successfully!",
+      data: post,
+    };
+  } catch (e: unknown) {
+    console.error(`Error updating post: ${e}`);
+  }
+}
